@@ -1,13 +1,23 @@
 package ContoCorrentista.model;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
+
+import ContoCorrente.ope.Movimento;
 
 public class Correntista {
 	
 	private String nome;
-	private Date dataDiNascita;
+	private LocalDate dataDiNascita;
+	private List<Movimento> movimenti;
+	
+	 public Correntista() {
+	        movimenti = new ArrayList<>();
+	    }
 
 	public void RegCorrentista() {
 		Scanner scanner = new Scanner(System.in);
@@ -15,12 +25,13 @@ public class Correntista {
 		System.out.println("inserisci il tuo nome: ");
 		this.nome=scanner.nextLine();
 		
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        System.out.print("Inserisci la tua data di nascita: \n usa il formato yyyy-MM-dd");
+        System.out.print("Inserisci la tua data di nascita: "
+        		+ "\nusa il formato yyyy-MM-dd "
+        		+ "\n ---->");
         try { //controllo se il formato è corretto
-            this.dataDiNascita = dateFormat.parse(scanner.nextLine());
+            this.dataDiNascita = LocalDate.parse(scanner.nextLine());
         } catch (Exception e) {
-            System.out.println("Errore: Formato data di nascita non valido.");
+            System.out.println(" ! Errore: Formato data di nascita non valido. ! ");
         }
 	}
 
@@ -32,12 +43,20 @@ public class Correntista {
 		this.nome = nome;
 	}
 
-	public Date getDataDiNascita() {
+	public LocalDate getDataDiNascita() {
 		return dataDiNascita;
 	}
 
-	public void setDataDiNascita(Date dataDiNascita) {
+	public void setDataDiNascita(LocalDate dataDiNascita) {
 		this.dataDiNascita = dataDiNascita;
+	}
+
+	public List<Movimento> getMovimenti() {
+		return movimenti;
+	}
+
+	public void setMovimenti(List<Movimento> movimenti) {
+		this.movimenti = movimenti;
 	}
 	
 	
