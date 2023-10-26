@@ -8,21 +8,21 @@ public class Movimento {
     private double importo;
     private double saldoPrima;
     private double saldoDopo;
-    private LocalDate dataMovimento;
+   
 
     public Movimento(String tipoOperazione, double importo, double saldoPrima, double saldoDopo) {
         this.tipoOperazione = tipoOperazione;
         this.importo = importo;
         this.saldoPrima = saldoPrima;
         this.saldoDopo = saldoDopo;
-        this.dataMovimento = LocalDate.now();
+        
     }
     
-    public Movimento(String tipoOperazione, double importo, double saldoPrima) {
+    public Movimento(String tipoOperazione, double importo, double saldoDopo) {
         this.tipoOperazione = tipoOperazione;
         this.importo = importo;
-        this.saldoPrima = saldoPrima;
-        this.dataMovimento = LocalDate.now();
+        this.saldoDopo = saldoDopo;
+        
     }
 
 	public String getTipoOperazione() {
@@ -57,12 +57,5 @@ public class Movimento {
 		this.saldoDopo = saldoDopo;
 	}
 
-	public LocalDate getDataMovimento() {
-		return dataMovimento;
-	}
-
-	public void setDataMovimento(LocalDate dataMovimento) {
-		this.dataMovimento = dataMovimento;
-	}
     
 }

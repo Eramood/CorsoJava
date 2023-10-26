@@ -25,10 +25,9 @@ public class Correntista {
 		System.out.println("inserisci il tuo nome: ");
 		this.nome=scanner.nextLine();
 		
-        System.out.print("Inserisci la tua data di nascita: "
-        		+ "\nusa il formato yyyy-MM-dd "
-        		+ "\n ---->");
-        try { //controllo se il formato è corretto
+        System.out.println("Inserisci la tua data di nascita: "
+        		+ "\nusa il formato yyyy-MM-dd ");
+        try {
             this.dataDiNascita = LocalDate.parse(scanner.nextLine());
         } catch (Exception e) {
             System.out.println(" ! Errore: Formato data di nascita non valido. ! ");

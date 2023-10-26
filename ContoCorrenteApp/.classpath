@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="E:/Corsojava/librerie/itextpdf-5.5.13.3.jar"/>
 	<classpathentry kind="lib" path="E:/Corsojava/librerie/commons-lang3-3.13.0.jar"/>
+	<classpathentry kind="lib" path="E:/Corsojava/librerie/opencsv-5.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

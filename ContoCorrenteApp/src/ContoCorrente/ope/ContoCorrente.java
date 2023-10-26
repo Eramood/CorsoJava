@@ -5,10 +5,13 @@ package ContoCorrente.ope;
 import com.itextpdf.text.pdf.PdfDocument;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.codec.Base64.OutputStream;
+import com.opencsv.CSVWriter;
 import com.itextpdf.text.Document;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Date;
@@ -29,16 +32,15 @@ public class ContoCorrente {
 		this.correntista=correntista;
 		//inizializzo il saldo del conto.
 		this.saldo=0;
+		
 	}
 	
 	public void calcoloBonus() {
-		//estraggo la data odierna per il calcolo
 		Date dataAttuale = new Date(); 
-		//trovo l'anno di nasciat e l'anno attuale
 		LocalDate annoAttuale = LocalDate.now();;
 		//effettuo il calcolo dell'eta.
 		Period eta = Period.between(correntista.getDataDiNascita(),annoAttuale);
-		System.out.println("la tua eta è " + eta);
+		//System.out.println("la tua eta è " + eta);
 		
 		//inizializzo e controllo il bonus da attribuire
 		
@@ -51,16 +53,14 @@ public class ContoCorrente {
 		  }else{
 			  bonus = 200; }
 		  
-		  saldoIniziale = saldo;
-		  saldo = saldo + bonus;
+		  double saldoIniziale =saldo;
+		  saldo =saldo+bonus;
 		  
 		  
-		  Movimento movimento = new Movimento("Bonus", bonus ,saldoIniziale ,saldo);
+		  Movimento movimento = new Movimento("Bonus", bonus ,saldoIniziale,saldo);
 			correntista.getMovimenti().add(movimento);
 		  
-		  System.out.println("Ti abbiamo accreditato un bonus di " + bonus +
-		  "euro il tuo saldo attuale è di: "+ saldo + "euro")
-		 ;
+		  System.out.println("Conto ti abbiamo accreditato un bonus di " + bonus);
 	}
 
 	 
@@ -73,17 +73,14 @@ public class ContoCorrente {
 		this.saldo = saldo;
 	}
 	
-	public void prelievo() {
-		double importo;
-		System.out.println("inserisci l'importo da prelevare");
-		importo = scanner.nextDouble();
+	public void prelievo(double importo) {
 		if (importo <= saldo) {
 			
 			double importoInz = saldo;
 			
 			saldo=saldo-importo;
 			
-			Movimento movimento = new Movimento("prelievo", importo,importoInz ,saldo);
+			Movimento movimento = new Movimento("Prelievo", importo,importoInz ,saldo);
 			correntista.getMovimenti().add(movimento);
 			
 			System.out.println("il saldo attuale è: " + saldo + " euro");
@@ -92,17 +89,13 @@ public class ContoCorrente {
 		}
 	}
 	
-	public void versamento() {
-		double importo;
-		System.out.println("inserisci l'importo da versare");
-		importo = scanner.nextDouble();
+	public void versamento(double importo) {
 		if (importo > 0) {
 			
 			double importoInz = saldo;
+			saldo=saldo+importo;
 			
-			saldo= saldo + importo;
-			
-			Movimento movimento = new Movimento("versamento", importo,importoInz ,saldo);
+			Movimento movimento = new Movimento("Versamento",importo,importoInz,saldo);
 			correntista.getMovimenti().add(movimento);
 			
 			System.out.println("il saldo attuale è: " + saldo + " euro");
@@ -111,15 +104,15 @@ public class ContoCorrente {
 		}
 	}
 	
-	public void chiudiConto(){
+	public void chiudiContoPdf(){
 		try {
 		LocalDate dataChiusura = LocalDate.now();
 		String nomeCorrentista = correntista.getNome();
-		String nomeFile = "EC_"+ nomeCorrentista +"_"+dataChiusura+".pdf";
-		//String destFile = "E:\\Corsojava"; destinazione del file creato
+		String destFile = "E:/Corsojava/workspace1/ContoCorrenteApp"; //destinazione del file creato
+		String nomeFile =destFile+"/EC_"+ nomeCorrentista +"_"+dataChiusura+".pdf";
 		
 	    Document document = new Document();
-	    
+	   
 	    //creazione istanza per l'output
 	    FileOutputStream outputStream = 
 	    		new FileOutputStream(nomeFile);
@@ -127,29 +120,35 @@ public class ContoCorrente {
 	    //Create PDFWriter instance.
         PdfWriter.getInstance(document, outputStream);
         
-      //Open the document.
+        //Create Font objects
+        Font font = new Font(Font.FontFamily.COURIER,15);
+        
+        
+        //Open the document.
         document.open();
  
         //Add content to the document.
-        document.add(new Paragraph("Estratto conto"+" | "+correntista.getNome()+ " | "+ dataChiusura));
-        
-        document.add(new Paragraph (StringUtils.rightPad("Tipo Operazione",20," ")+"|"+StringUtils.rightPad("Importo",20," ")+ "|"+StringUtils.rightPad("Saldo iniziale",20," ")+ "|"+StringUtils.rightPad("Saldo Finale",20," ")+"|"));
-        
+        document.add(new Paragraph("Estratto conto"+" "+correntista.getNome()+ "|"+ dataChiusura , font));
+        document.add(new Paragraph("_______________________________________________________", font));
+        document.add(new Paragraph (StringUtils.rightPad("Tipo Operazione",10," ")+"|"+StringUtils.rightPad("Importo",10," ")+ "|"+StringUtils.rightPad("Saldo iniziale",10," ")+ "|"+StringUtils.rightPad("Saldo Finale",10," ")+"|",font));
+        document.add(new Paragraph("_______________________________________________________", font));
         for(int i=0; i < correntista.getMovimenti().size(); i++) {
         	Movimento movimento = correntista.getMovimenti().get(i);
         	
+        	
         	String stringImporto = Double.toString(movimento.getImporto());  // converto il valore importo double a string
-        	String formatImporto = StringUtils.rightPad(stringImporto,20,"");//uso la variabile formatImporto per formattare correttamente l'importo
+        	String formatImporto = StringUtils.rightPad(stringImporto,10,"");
         	
         	String stringSaldoIniz = Double.toString(movimento.getSaldoPrima());
-        	String formatSaldoIniz = StringUtils.rightPad(stringSaldoIniz,20,"");
+        	String formatSaldoIniz = StringUtils.rightPad(stringSaldoIniz,10,"");
         	
         	String stringSaldoFin = Double.toString(movimento.getSaldoDopo());
-        	String formatSaldoFin = StringUtils.rightPad(stringSaldoFin,20,"");
+        	String formatSaldoFin = StringUtils.rightPad(stringSaldoFin,10,"");
         	
+        	String formatTipoOpe = StringUtils.rightPad(movimento.getTipoOperazione(),14);
         	
-        	
-        	document.add(new Paragraph(StringUtils.rightPad(movimento.getTipoOperazione(),20," ")+ "|"+formatImporto+"|"+formatSaldoIniz+"|"+formatSaldoFin+"|"));
+        	document.add(new Paragraph("_______________________________________________________", font));
+        	document.add(new Paragraph(formatTipoOpe+" | "+formatImporto+" | "+formatSaldoIniz+" | "+formatSaldoFin+" | ", font));
         }
         
     
@@ -166,6 +165,47 @@ public class ContoCorrente {
 		
 	}
  }
+	
+	public void chiudiContoCsv(){
+		
+		LocalDate dataChiusura = LocalDate.now();
+		String nomeCorrentista = correntista.getNome();
+		String destFile = "E:/Corsojava/workspace1/ContoCorrenteApp";//inserire la cartella di destinazione
+		String file = destFile+"/EC_"+ nomeCorrentista +"_"+dataChiusura+".csv";
+		try {
+			
+		FileWriter outputfile = new FileWriter(file);
+		CSVWriter writer = new CSVWriter(outputfile);
+		
+		String stringaHeader="Correntista: "+ nomeCorrentista +" "+ "Data: "+dataChiusura;
+		String[] header= {stringaHeader};
+		writer.writeNext(header); 
+		
+		String[] header1 = { "Tipo operazione", "Importo","Saldo iniziale" ,"Saldo Finale" }; 
+        writer.writeNext(header1); 
+        
+        for(int i=0; i < correntista.getMovimenti().size(); i++) {
+        	Movimento movimento = correntista.getMovimenti().get(i);
+        	
+        	String stringImporto = Double.toString(movimento.getImporto());
+        	String stringSaldoIniz = Double.toString(movimento.getSaldoPrima());
+        	String stringSaldoFin = Double.toString(movimento.getSaldoDopo());
+        	
+        	String[] data = { movimento.getTipoOperazione(), stringImporto,stringSaldoIniz ,stringSaldoFin }; 
+            writer.writeNext(data); 
+        }
+        
+        String[] dataSaldo= {"Saldo Totale:",Double.toString(saldo)};
+        writer.writeNext(dataSaldo);
+        
+		
+		
+		
+		writer.close(); 
+		}catch (Exception e) { 
+	        e.printStackTrace(); 
+		}
+	}
 
 	public double getSaldoIniziale() {
 		return saldoIniziale;
