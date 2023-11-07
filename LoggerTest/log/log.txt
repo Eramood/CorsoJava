@@ -1,0 +1,5 @@
+WARNING c'è un problema
+INFO puoi vedere errori e avvertimenti
+ERRORE nel sistema
+WARNING c'è un problema
+ERRORE nel sistema
