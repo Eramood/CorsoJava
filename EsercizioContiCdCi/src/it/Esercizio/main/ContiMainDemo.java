@@ -24,17 +24,17 @@ public class ContiMainDemo {
 		
 		
 		
-		//contoInvestimenti.chiudiConto();
+		contoInvestimenti.chiudiConto();
 		
-		/*
+		
 		contoCorrente.versamento(100.00,dataTest1 );
 		contoCorrente.preleva(50.00,dataTest2);
 		contoCorrente.versamento(100.00, dataTest3);
 		contoCorrente.preleva(1000.00,dataChiusura);
 		contoCorrente.chiudiConto();
-	 		*/
+	 		
 		contoDeposito.versamento(100.00,dataTest1 );
-		//contoDeposito.preleva(1001, dataTest3);
+		contoDeposito.preleva(1001, dataTest3);
 		contoDeposito.chiudiConto();
 		
 	}
