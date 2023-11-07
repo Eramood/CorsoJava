@@ -2,9 +2,8 @@ package ContoCorrente.ope;
 
 
 
-import com.itextpdf.text.pdf.PdfDocument;
+
 import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.codec.Base64.OutputStream;
 import com.opencsv.CSVWriter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
@@ -25,7 +24,7 @@ public class ContoCorrente {
 
 	private Correntista correntista;
 	private double saldo;
-	private double saldoIniziale;
+	
 	Scanner scanner = new Scanner(System.in);
 	
 	public ContoCorrente(Correntista correntista) {
@@ -36,7 +35,6 @@ public class ContoCorrente {
 	}
 	
 	public void calcoloBonus() {
-		Date dataAttuale = new Date(); 
 		LocalDate annoAttuale = LocalDate.now();;
 		//effettuo il calcolo dell'eta.
 		Period eta = Period.between(correntista.getDataDiNascita(),annoAttuale);
@@ -152,7 +150,7 @@ public class ContoCorrente {
         }
         
     
-        document.add(new Paragraph("Saldo Totale = "+ saldo));
+        document.add(new Paragraph("Saldo Totale= "+ saldo));
  
         //Close document e outputStream.
         document.close();
@@ -207,13 +205,7 @@ public class ContoCorrente {
 		}
 	}
 
-	public double getSaldoIniziale() {
-		return saldoIniziale;
-	}
-
-	public void setSaldoIniziale(double saldoIniziale) {
-		this.saldoIniziale = saldoIniziale;
-	}
+	
 }
 	
 

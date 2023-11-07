@@ -19,12 +19,12 @@ public class Menu {
         
         while(scelta) {
         	
-        	System.out.println("vuoi eseguire operazioni sul conto?: \n SI No");
+        	System.out.println("vuoi eseguire operazioni sul conto?: \n |->s/SI<-| |->n/No<-|");
         	
         	String risposta = scanner.nextLine();
         	
         	if(risposta.contains("s") || risposta.contains("si")) {
-        		System.out.println("scegli che operazione effettuare: \n -> v=Versamento \n -> p=Prelievo \n -> c=Chiudi il conto");
+        		System.out.println("scegli che operazione effettuare: \n--> v=Versamento \n--> p=Prelievo \n--> c=Chiudi il conto");
         		String operazione = scanner.nextLine();
         			
         			if(operazione.contains("v")) {
