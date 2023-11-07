@@ -29,4 +29,8 @@ private final double tassoInteresseAnnuo = 10;
     		System.out.println("Hai superato il limite di prelievo");
     	}
     }
+    
+    public void chiusuraAnno() {
+    	super.chiusuraAnno(tassoInteresseAnnuo);
+    }
 }

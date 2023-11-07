@@ -23,35 +23,56 @@ public class Conto {
         this.movimenti = new ArrayList<>();
     }
     
-    public void generaInteressi(double tassoInteresseAnnuo, LocalDate dataChiusura) {
+    public void generaInteressi(double tassoInteresseAnnuo, LocalDate dataPrimoInteresse) {
         
         System.out.println("saldo iniziale " + saldo);
         double percentualeGiornaliera= tassoInteresseAnnuo / 365;
-        int giorniTrascorsi = (int) ChronoUnit.DAYS.between(dataApertura, dataChiusura);
+        int giorniTrascorsi = (int) ChronoUnit.DAYS.between(dataApertura, dataPrimoInteresse);
         System.out.println("Giorni trascorsi :"+giorniTrascorsi);
         double interesseGiornaliero = (saldo * percentualeGiornaliera) / 100;
         double saldoFin = saldo + interesseGiornaliero * giorniTrascorsi;
         System.out.println("saldo complessivo " + saldoFin);
-        saldo = saldoFin;
-        
+        saldo = saldoFin; 
     }
+    
   public void aggiornaInteressi(double tassoInteresseAnnuo, LocalDate dataUltimoAggiornamento,LocalDate dataMovimento) {
 	  System.out.println("saldo iniziale " + saldo);  
 	  double percentualeGiornaliera= tassoInteresseAnnuo / 365;
         int giorniTrascorsi = (int) ChronoUnit.DAYS.between(dataUltimoAggiornamento, dataMovimento);
+        System.out.println("Giorni trascorsi :"+giorniTrascorsi);
         double interesseGiornaliero = (saldo * percentualeGiornaliera) / 100;
         double saldoFin = saldo + interesseGiornaliero * giorniTrascorsi;
         System.out.println("saldo complessivo " + saldoFin);
         saldo = saldoFin;
     }
     
+  	public void chiusuraAnno(double tassoInteresseAnnuo) {
+  		System.out.println("Chiusura anno---------------"); 
+  		double saldoParziale = saldo;
+  		int annoPrecedente =dataUltimoAggiornamento.getYear();
+  		int annoSuccessivo = annoPrecedente + 1;
+  		LocalDate dataAggiornata = LocalDate.of(annoSuccessivo, 1, 1);
+  		System.out.println("data aggiornata al "+ dataUltimoAggiornamento); 
+  		double percentualeGiornaliera= tassoInteresseAnnuo / 365;
+        int giorniTrascorsi = (int) ChronoUnit.DAYS.between(dataUltimoAggiornamento, dataAggiornata);
+        System.out.println("Giorni trascorsi :"+giorniTrascorsi);
+        double interesseGiornaliero = (saldo * percentualeGiornaliera) / 100;
+        double interesseChiusura = interesseGiornaliero * giorniTrascorsi;
+        double saldoFin = saldo + interesseChiusura;
+        System.out.println("saldo complessivo " + saldoFin);
+        saldo = saldoFin;
+        dataUltimoAggiornamento = dataAggiornata;
+  		Movimento movimento = new Movimento(dataAggiornata, "Chiusura anno",interesseChiusura,saldoParziale ,saldo);
+        movimenti.add(movimento);
+  	}
     
     
     
     
     public void chiudiconto(double tassoInteresseAnnuo) {
     	//LocalDate dataOdierna = LocalDate.now();
-    	LocalDate dataOdierna = LocalDate.of(2023, 1, 1);
+    	System.out.println("Chiudi conto----------");
+    	LocalDate dataOdierna = LocalDate.of(2024, 1, 1);
     	double saldoParziale = saldo;
     	if(dataUltimoAggiornamento != null) {
     	 aggiornaInteressi(tassoInteresseAnnuo,dataUltimoAggiornamento,dataOdierna);
@@ -62,13 +83,20 @@ public class Conto {
     	Movimento movimento = new Movimento(dataOdierna, "Chiusura", 0,saldoParziale ,saldo);
     	movimenti.add(movimento);
     	}
+    	System.out.println("---------------"); 
+    	System.out.println(" "); 
     }
     
     
     public void preleva(double importo, double tassoInteresseAnnuo,LocalDate dataMovimento) {
-    	
+    	System.out.println("Prelievo----------");
     	LocalDate datamov = dataMovimento;
+    	
+    	
     	if(dataUltimoAggiornamento != null) {
+    		if(datamov.getYear() > dataUltimoAggiornamento.getYear() ) {
+        		chiusuraAnno(tassoInteresseAnnuo);
+        	}
     	aggiornaInteressi(tassoInteresseAnnuo,dataUltimoAggiornamento,datamov);
     	}else {
     	generaInteressi(tassoInteresseAnnuo ,datamov);
@@ -80,14 +108,26 @@ public class Conto {
     	}
     	double saldoParziale = saldo;
         saldo -= importo;
+        System.out.println("prelievo" + importo +" Saldo pre prelievo + interessi: "+ saldoParziale + " Saldo dopo prelievo: "+saldo);
         Movimento movimento = new Movimento(datamov, "Prelievo", importo,saldoParziale ,saldo);
         movimenti.add(movimento);
     	    dataUltimoAggiornamento = datamov;
     }
 
     public void versamento(double importo, double tassoInteresseAnnuo,LocalDate dataMovimento) {
+    	System.out.println("Versamento----------");
+    	
     	LocalDate datamov = dataMovimento;
+    	
+
+    	
     	if(dataUltimoAggiornamento != null) {
+    		
+    		if(datamov.getYear() > dataUltimoAggiornamento.getYear() ) {
+        		chiusuraAnno(tassoInteresseAnnuo);
+        		System.out.println("Chiusura anno---------------<"); 
+        	}
+    		
     	aggiornaInteressi(tassoInteresseAnnuo,dataUltimoAggiornamento,datamov);
     	}else {
     	generaInteressi(tassoInteresseAnnuo ,datamov);	
@@ -102,6 +142,7 @@ public class Conto {
     	}
     	double saldoParziale = saldo;
         saldo += importo;
+        System.out.println("versamento" + importo +" Saldo pre versamento + interessi: "+ saldoParziale + " Saldo dopo versamento "+saldo);
         Movimento movimento = new Movimento(dataMovimento, "Versamento", importo,saldoParziale ,saldo);
         movimenti.add(movimento);
         dataUltimoAggiornamento = datamov;
