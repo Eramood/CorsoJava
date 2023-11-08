@@ -8,17 +8,18 @@ public class ContoCorrente extends Conto {
 
     public ContoCorrente(String titolare) {
         super(titolare);
+        super.aperturaConto();
     }
 
     public void generaInteressi(LocalDate dataChiusura) {
        super.generaInteressi(tassoInteresseAnnuo, dataChiusura );
     }
-    
+    /*
     public void chiudiConto() {
-    	super.chiudiconto(tassoInteresseAnnuo);
+    	super.chiudiconto();
     	super.stampaMovimenti();
     }
-    
+    */
     public void versamento(double importo, LocalDate dataMovimento) {
     	super.versamento(importo, tassoInteresseAnnuo,dataMovimento);
     }
@@ -26,5 +27,13 @@ public class ContoCorrente extends Conto {
     	super.preleva(importo, tassoInteresseAnnuo, dataMovimento);
     }
  
+    public void estrattoContoPdf() {
+    	super.estrattoContoPdf(tassoInteresseAnnuo);
+    }
+    
+    public void chiusuraAnno() {
+    	super.chiusuraAnno(tassoInteresseAnnuo);
+    }
+    
 	
 }
