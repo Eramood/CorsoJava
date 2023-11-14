@@ -24,7 +24,7 @@ private final double tassoInteresseAnnuo = 10;
     	super.versamento(importo, tassoInteresseAnnuo,dataMovimento);
     }
     public void preleva(double importo, LocalDate dataMovimento) {
-    	if(importo<1000) {
+    	if(importo<=1000) {
     	super.preleva(importo, tassoInteresseAnnuo, dataMovimento);
     	}else {
     		System.out.println("Hai superato il limite di prelievo");

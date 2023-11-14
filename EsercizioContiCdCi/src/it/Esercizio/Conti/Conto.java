@@ -15,6 +15,9 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import it.Esercizio.Movimenti.Movimento;
 
 public class Conto {
@@ -25,6 +28,9 @@ public class Conto {
     private ArrayList<Movimento> movimenti;
     private static final String PATHFILE = "./PdfFolder"; //destinazione del file creato
     protected double interesseComplessivo;
+    protected double percTassa = 26;
+    
+    private static final Logger logger = LogManager.getLogger(Conto.class);
     
     public Conto(String titolare) {
         this.titolare = titolare;
@@ -38,66 +44,62 @@ public class Conto {
     public void aperturaConto() {
     	saldo = 1000;
     	dataApertura =LocalDate.of(2021, 1, 1);
+    	dataUltimoAggiornamento = dataApertura;
     	Movimento movimento = new Movimento(dataApertura, "Apri conto", 0 ,saldo ,saldo);
     	movimenti.add(movimento);
     }
     
     public double generaInteressi(double tassoInteresseAnnuo, LocalDate dataPrimoInteresse) {
+    	DecimalFormat df = new DecimalFormat("0.00");
     	double saldoParziale = saldo;
-       // System.out.println("saldo iniziale " + saldo);
         double percentualeGiornaliera= tassoInteresseAnnuo / 365;
         int giorniTrascorsi = (int) ChronoUnit.DAYS.between(dataApertura, dataPrimoInteresse);
-      //  System.out.println("Giorni trascorsi :"+giorniTrascorsi);
         double interesseGiornaliero = (saldo * percentualeGiornaliera) / 100;
         double interesseApertura = interesseGiornaliero * giorniTrascorsi;
         double interesseParziale = interesseComplessivo;
         interesseComplessivo += interesseApertura;
-       // double saldoFin = saldo + interesseApertura ;
-       // System.out.println("saldo complessivo " + saldoFin);
-        //saldo = saldoFin; 
-        Movimento movimento2 = new Movimento(dataApertura, "Deposito int",interesseApertura,interesseParziale ,interesseComplessivo);
-        movimenti.add(movimento2);
-     //   Movimento movimento = new Movimento(dataPrimoInteresse, "Primo int",interesseApertura,saldoParziale ,saldo);
-     //   movimenti.add(movimento);
+        Movimento movimento = new Movimento(dataPrimoInteresse, "Agg int",interesseApertura,interesseParziale ,interesseComplessivo);
+        movimenti.add(movimento);
+        logger.info("Calcolo interessi - Data iniziale: {},Data Del Aggiornata: {} , Giorni Trascorsi: {},Saldo base:{},Perc Giornaliera:{}, Interesse Giornaliero: {}, , Interesse di Apertura: {},, Interesse Complessivo: {} ",
+        		dataApertura,dataPrimoInteresse, giorniTrascorsi,df.format(saldo),percentualeGiornaliera ,df.format(interesseGiornaliero),df.format(interesseApertura),df.format(interesseComplessivo));
         return interesseApertura;
     }
     
+    
   public double aggiornaInteressi(double tassoInteresseAnnuo, LocalDate dataUltimoAggiornamento,LocalDate dataMovimento) {
-	  System.out.println("saldo iniziale " + saldo);  
+	  DecimalFormat df = new DecimalFormat("0.00");
+	 
 	  double percentualeGiornaliera= tassoInteresseAnnuo / 365;
         int giorniTrascorsi = (int) ChronoUnit.DAYS.between(dataUltimoAggiornamento, dataMovimento);
-       // System.out.println("Giorni trascorsi :"+giorniTrascorsi);
         double interesseGiornaliero = (saldo * percentualeGiornaliera) / 100;
         double interesse = interesseGiornaliero * giorniTrascorsi;
-       // double saldoFin = saldo + interesse;
         double interesseParziale = interesseComplessivo;
         interesseComplessivo += interesse;
-        Movimento movimento = new Movimento(dataMovimento, "Deposito int",interesse,interesseParziale ,interesseComplessivo);
-        movimenti.add(movimento);
-       // System.out.println("saldo complessivo " + saldoFin);
-      //  saldo = saldoFin;
+       Movimento movimento = new Movimento(dataMovimento, "Int attuale",interesse,interesseParziale ,interesseComplessivo);
+       movimenti.add(movimento);
+       logger.info("Calcolo interessi - Data iniziale: {},Data Del Aggiornata: {} , Giorni Trascorsi: {},Saldo base:{},Perc Giornaliera:{}, Interesse Giornaliero: {}, Interesse totale: {}, Interessi Totali: {}   ",
+    		       dataUltimoAggiornamento,dataMovimento, giorniTrascorsi,df.format(saldo),df.format(percentualeGiornaliera),df.format(interesseGiornaliero),df.format(interesse),df.format(interesseComplessivo));
         return interesse;
     }
     
   	public void chiusuraAnno(double tassoInteresseAnnuo) {
-  		System.out.println("Chiusura anno---------------"); 
+  		DecimalFormat df = new DecimalFormat("0.00");
   		double saldoParziale = saldo;
   		int annoPrecedente =dataUltimoAggiornamento.getYear();
   		int annoSuccessivo = annoPrecedente + 1;
   		LocalDate dataAggiornata = LocalDate.of(annoPrecedente, 12, 31);
-  		System.out.println("data aggiornata al "+ dataUltimoAggiornamento); 
   		double percentualeGiornaliera= tassoInteresseAnnuo / 365;
         int giorniTrascorsi = (int) ChronoUnit.DAYS.between(dataUltimoAggiornamento, dataAggiornata);
-        System.out.println("Giorni trascorsi :"+giorniTrascorsi);
         double interesseGiornaliero = (saldo * percentualeGiornaliera) / 100;
         double interesseChiusura = interesseGiornaliero * giorniTrascorsi;
         interesseComplessivo += interesseChiusura;
         double saldoFin = saldo + interesseChiusura;
-        System.out.println("saldo complessivo " + saldoFin);
         saldo = saldoFin;
+        logger.info("Chiusura anno- Data1: {}, Data2: {}, Giorni trascorsi:{},Saldo base:{},Perc Giornaliera:{} ,Interessi giornaliero: {},Interesse Calcolato: {}, Interesse Complessivo {} ",
+        				dataUltimoAggiornamento,dataAggiornata,giorniTrascorsi,df.format(saldoParziale),percentualeGiornaliera,df.format(interesseGiornaliero),df.format(interesseChiusura),df.format(interesseComplessivo));
         LocalDate dataAggiornataNuova = LocalDate.of(annoSuccessivo, 1, 1);
         dataUltimoAggiornamento = dataAggiornataNuova;
-  		Movimento movimento = new Movimento(dataAggiornata, "Chiudi anno",interesseChiusura,saldoParziale ,saldo);
+  		Movimento movimento = new Movimento(dataAggiornata, "Int lordo",interesseChiusura,saldoParziale ,saldo);
         movimenti.add(movimento);
         tassazione(dataAggiornata);
   	}
@@ -106,8 +108,6 @@ public class Conto {
     
     
     public void chiudiconto(double tassoInteresseAnnuo, LocalDate dataOdierna) {
-    	//LocalDate dataOdierna = LocalDate.now();
-    	System.out.println("Chiudi conto----------");
     	double interesse=0;
     	double saldoParziale = saldo;
     	if(dataUltimoAggiornamento != null) {
@@ -121,15 +121,13 @@ public class Conto {
     	Movimento movimento = new Movimento(dataOdierna, "Aggiornamento", +interesseComplessivo,saldoParziale ,saldo);
     	movimenti.add(movimento);
     	}
-    	System.out.println("---------------"); 
-    	System.out.println(" "); 
+   
     }
     
     
     public void preleva(double importo, double tassoInteresseAnnuo,LocalDate dataMovimento) {
-    	System.out.println("Prelievo----------");
     	LocalDate datamov = dataMovimento;
-    	
+    	if(importo <= saldo) {
     	
     	if(dataUltimoAggiornamento != null) {
     		if(datamov.getYear() > dataUltimoAggiornamento.getYear() ) {
@@ -138,11 +136,6 @@ public class Conto {
     	aggiornaInteressi(tassoInteresseAnnuo,dataUltimoAggiornamento,datamov);
     	}else {
     	generaInteressi(tassoInteresseAnnuo ,datamov);
-      //  double percentualeGiornaliera= tassoInteresseAnnuo / 365;
-      //  int giorniTrascorsi = (int) ChronoUnit.DAYS.between(dataApertura, datamov);
-      // double interesseGiornaliero = (saldo * percentualeGiornaliera) / 100;
-      //  double saldoInteressi = saldo + interesseGiornaliero * giorniTrascorsi;
-      //  saldo = saldoInteressi;
     	}
     	double saldoParziale = saldo;
         saldo -= importo;
@@ -150,41 +143,33 @@ public class Conto {
         Movimento movimento = new Movimento(datamov, "Prelievo", importo,saldoParziale ,saldo);
         movimenti.add(movimento);
     	 dataUltimoAggiornamento = datamov;
+    	 logger.info("Prelievo- Data prelievo: {}, Importo: {}, Saldo parziale{}, Saldo Finale{}",
+    			 datamov,importo,saldoParziale,saldo);
+    	}else {
+    		System.out.println("Operazione fallita l'importo supera il saldo :" + saldo);
+    	}
     }
 
     public void versamento(double importo, double tassoInteresseAnnuo,LocalDate dataMovimento) {
-    	System.out.println("Versamento----------");
+    	//System.out.println("Versamento----------");
     	
     	LocalDate datamov = dataMovimento;
-    	
-
-    	
     	if(dataUltimoAggiornamento != null) {
-    		
     		if(datamov.getYear() > dataUltimoAggiornamento.getYear() ) {
         		chiusuraAnno(tassoInteresseAnnuo);
-        		System.out.println("Chiusura anno---------------<"); 
+        		//System.out.println("Chiusura anno---------------<"); 
         	}
-    		
     	aggiornaInteressi(tassoInteresseAnnuo,dataUltimoAggiornamento,datamov);
     	}else {
     	generaInteressi(tassoInteresseAnnuo ,datamov);	
-    		/*
-        double percentualeGiornaliera= tassoInteresseAnnuo / 365;
-        int giorniTrascorsi = (int) ChronoUnit.DAYS.between(dataApertura, dataMovimento);
-   
-        double interesseGiornaliero = (saldo * percentualeGiornaliera) / 100;
-        double saldoInteressi = saldo + interesseGiornaliero * giorniTrascorsi;
-        saldo = saldoInteressi;
-        */
     	}
     	double saldoParziale = saldo;
         saldo += importo;
-        System.out.println("versamento" + importo +" Saldo pre versamento + interessi: "+ saldoParziale + " Saldo dopo versamento "+saldo);
         Movimento movimento = new Movimento(dataMovimento, "Versamento", importo,saldoParziale ,saldo);
         movimenti.add(movimento);
         dataUltimoAggiornamento = datamov;
-        System.out.println();
+        logger.info("Versamento- Data Versamento: {}, Importo: {}, Saldo parziale{}, Saldo Finale{}",
+   			 datamov,importo,saldoParziale,saldo);
     }
 
     public void stampaMovimenti() {
@@ -199,15 +184,12 @@ public class Conto {
         }
     }
     
-    private static LocalDate dataCasuale() {
-    	//da migliorare
+    private static LocalDate dataCasuale(LocalDate dataUltimoAggiornamento) {
 		Random random = new Random();
-		LocalDate dataDaCalcolo = LocalDate.now();
-		
-		 int giorniSottratti = random.nextInt(730);
-		 LocalDate dataPassataCasuale = dataDaCalcolo.minusDays(giorniSottratti);
-	
-	     return dataPassataCasuale;
+		LocalDate dataDaCalcolo = dataUltimoAggiornamento;
+		 int giorniDaAggiungere = random.nextInt(183);
+		 LocalDate dataCasuale = dataDaCalcolo.plusDays(giorniDaAggiungere);
+	     return dataCasuale;
 	}
     
     public String EcIntestazioneFormat() {
@@ -218,11 +200,12 @@ public class Conto {
 						"|"+StringUtils.rightPad("Saldo",10)+"|";
 	}
     
-    
-    
     public void estrattoContoPdf(double tassoInteresseAnnuo){
-    	DecimalFormat df = new DecimalFormat("0.00");
     	LocalDate dataRiferimento = LocalDate.now();
+    	if(dataRiferimento.getYear() > dataUltimoAggiornamento.getYear() ) {
+    		chiusuraAnno(tassoInteresseAnnuo);
+    	}
+    	DecimalFormat df = new DecimalFormat("0.00");
     	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     	String nomeFile =PATHFILE+"/EC_"+titolare+"_"+dataRiferimento+".pdf";
     	chiudiconto(tassoInteresseAnnuo, dataRiferimento);
@@ -263,27 +246,23 @@ public class Conto {
     }
     
     public void tassazione(LocalDate dataAggiornata) {
-    	System.out.println("interesse complessivo:" +interesseComplessivo);
-    	double tasse = (interesseComplessivo * 26 )/100;
+    	DecimalFormat df = new DecimalFormat("0.00");
+    	//System.out.println("interesse complessivo:" +interesseComplessivo);
+    	double tasse = (interesseComplessivo * percTassa )/100;
     	Double interessiNetti = interesseComplessivo - tasse;
-    	//saldo -= interesseComplessivo;
+    	saldo -= interesseComplessivo;
     	double saldoParziale = saldo;
-    	//double saldoAlNetto = saldo - tasse;
-    	saldo -= tasse;
-    	//Movimento movimento2 = new Movimento(dataAggiornata, "Calcolo int",interesseComplessivo,-tasse ,interessiNetti);
-    	//movimenti.add(movimento2);
-    	Movimento movimento = new Movimento(dataAggiornata, "Tassazione",-tasse,saldoParziale ,saldo);
+    	double saldoAlNetto = saldo + interessiNetti;
+    	saldo = saldoAlNetto;
+    	logger.info("Tassazione: Data iniziale: {}, Data Aggiornata: {}, Interessi Totali: {}, Tassa al 26%: {}, Interesse Netto: {} ",
+    			dataAggiornata,dataUltimoAggiornamento, df.format(interesseComplessivo), df.format(tasse),df.format(interessiNetti),df.format(interesseComplessivo));
+    	Movimento movimento2 = new Movimento(dataAggiornata, "Tassa int",interesseComplessivo,-tasse ,interessiNetti);
+    	movimenti.add(movimento2);
+    	Movimento movimento = new Movimento(dataAggiornata, "Int netto",interessiNetti,saldoParziale ,saldo);
         movimenti.add(movimento);
         interesseComplessivo =0;
     }
-    
-    
-    
-    
-    
-    
-    
-    
+   
     
     
 	public String getTitolare() {
