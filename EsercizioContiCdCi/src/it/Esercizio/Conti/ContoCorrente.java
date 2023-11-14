@@ -23,7 +23,7 @@ public class ContoCorrente extends Conto {
     public void versamento(double importo, LocalDate dataMovimento) {
     	super.versamento(importo, tassoInteresseAnnuo,dataMovimento);
     }
-    public void preleva(double importo, LocalDate dataMovimento) {
+    public void prelievo(double importo, LocalDate dataMovimento) {
     	super.preleva(importo, tassoInteresseAnnuo, dataMovimento);
     }
  

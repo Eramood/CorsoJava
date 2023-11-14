@@ -19,10 +19,10 @@ public class ContiMainDemo {
 		//LocalDate dataChiusura =LocalDate.of(2021, 12, 31);
 		
 		LocalDate dataTest1 =LocalDate.of(2022, 1, 1);
-		LocalDate dataTest2 =LocalDate.of(2023, 1, 1);
-		LocalDate dataTest3 =LocalDate.of(2023, 1, 1);
-		LocalDate dataTest4 =LocalDate.of(2023, 5, 1);
-		LocalDate dataTest5 =LocalDate.of(2022, 3, 1);
+		LocalDate dataTest2 =LocalDate.of(2022, 5, 21);
+		LocalDate dataTest3 =LocalDate.of(2022, 8, 1);
+		LocalDate dataTest5 =LocalDate.of(2023, 2, 15);
+		LocalDate dataTest4 =LocalDate.of(2023, 7, 11);
 		
 		
 		//contoInvestimenti.chiudiConto();
@@ -34,7 +34,8 @@ public class ContiMainDemo {
 		contoCorrente.estrattoContoPdf();
 	 		*/
 		contoDeposito.versamento(100.00,dataTest1 );
-		contoDeposito.versamento(50, dataTest5);
+		contoDeposito.prelievo(100.00,dataTest2 );
+		contoDeposito.versamento(50, dataTest3);
 		contoDeposito.estrattoContoPdf();
 		
 		/*

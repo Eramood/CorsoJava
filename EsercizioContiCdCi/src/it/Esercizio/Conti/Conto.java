@@ -157,7 +157,6 @@ public class Conto {
     	if(dataUltimoAggiornamento != null) {
     		if(datamov.getYear() > dataUltimoAggiornamento.getYear() ) {
         		chiusuraAnno(tassoInteresseAnnuo);
-        		//System.out.println("Chiusura anno---------------<"); 
         	}
     	aggiornaInteressi(tassoInteresseAnnuo,dataUltimoAggiornamento,datamov);
     	}else {
@@ -172,6 +171,8 @@ public class Conto {
    			 datamov,importo,saldoParziale,saldo);
     }
 
+    
+    /*
     public void stampaMovimenti() {
         System.out.println("Elenco dei movimenti del conto:");
         for (Movimento movimento : movimenti) {
@@ -183,6 +184,7 @@ public class Conto {
             System.out.println("-------------");
         }
     }
+    */
     
     private static LocalDate dataCasuale(LocalDate dataUltimoAggiornamento) {
 		Random random = new Random();

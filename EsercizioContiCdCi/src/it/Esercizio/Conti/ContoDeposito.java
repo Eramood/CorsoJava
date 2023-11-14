@@ -23,7 +23,7 @@ private final double tassoInteresseAnnuo = 10;
     public void versamento(double importo, LocalDate dataMovimento) {
     	super.versamento(importo, tassoInteresseAnnuo,dataMovimento);
     }
-    public void preleva(double importo, LocalDate dataMovimento) {
+    public void prelievo(double importo, LocalDate dataMovimento) {
     	if(importo<=1000) {
     	super.preleva(importo, tassoInteresseAnnuo, dataMovimento);
     	}else {

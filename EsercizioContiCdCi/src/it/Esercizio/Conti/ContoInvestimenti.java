@@ -3,13 +3,17 @@ package it.Esercizio.Conti;
 import java.time.LocalDate;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class ContoInvestimenti extends Conto {
 private final double tassoInteresseAnnuo = interesseRandom();
-    
+private static final Logger logger = LogManager.getLogger(Conto.class);
+
 	private double interesseRandom() {
 		Random random = new Random();
 		double interesse = random.nextInt(201) - 100;
-		System.out.println("Gli interessi ammontano a: "+interesse);
+		logger.debug("Interessi randomici: {}",interesse);
 		return interesse;
 	}
 	
