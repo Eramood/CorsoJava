@@ -50,8 +50,9 @@ public class Registra extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.getWriter().append("Dati in caricamento.....");
-		 String nome = request.getParameter("nome");
+		response.setContentType("text/html");
+		PrintWriter writer = response.getWriter();
+			String nome = request.getParameter("nome");
 	        String cognome = request.getParameter("cognome");
 	        String sesso = request.getParameter("sesso");
 	        String luogoNascita = request.getParameter("luogoNascita");
@@ -79,7 +80,10 @@ public class Registra extends HttpServlet {
 				 ResultSet resultSet = preparedStatement2.executeQuery();
 				
 				 if(resultSet.next() == true) {
-					 response.getWriter().append("Dati gia presenti");
+					
+					 writer.append("\n<html><body><h1> L'utente "+nome+", risulta gia registrato"
+					 		+ "<p><a href=\"pagregistrazione.html\">Torna alla registrazione</a></p>"
+					 		+ "</h1></body></html> ");
 				 }else {
 					 try {
 			        	 Connection connection = dbHandler.getConnection();
@@ -95,7 +99,7 @@ public class Registra extends HttpServlet {
 		                            + "metodoLink) "
 		                            + "VALUES (?,?,?,?,?,?,?,?,?)");
 				            		
-				             
+	
 				           preparedStatement.setString(1,codiceFiscale );
 				           
 				           preparedStatement.setString(2, nome);
@@ -104,7 +108,6 @@ public class Registra extends HttpServlet {
 				           preparedStatement.setString(5, luogoNascita);
 				           DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 				           LocalDate localDate = LocalDate.parse(dataNascita, formatter);
-				          
 				           preparedStatement.setDate(6, java.sql.Date.valueOf(localDate));
 				           preparedStatement.setString(7, password);
 				           preparedStatement.setString(8, provincia);
@@ -117,11 +120,13 @@ public class Registra extends HttpServlet {
 				    	   e.printStackTrace();
 				       }
 				       
-			        response.getWriter().append("\nDati caricati con successo");
+					 	
+						writer.append("\n<html><body><h1> Benvenuto "+nome+", la registrazione e' stata effettuata correttamente"
+								+ "<p><a href=\"index.html\">Torna alla homepage</a></p>"
+								+ "</h1></body></html> ");
 				 }
 			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				response.getWriter().append("Errore nel caricamento di dati"+ e1);
 			}
 	        
 	        
