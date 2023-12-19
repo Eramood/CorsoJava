@@ -60,18 +60,8 @@ public class Registra extends HttpServlet {
 	        String dataNascita = request.getParameter("dataNascita");
 	        String codiceFiscale = request.getParameter("codiceFiscale");
 	        String password = request.getParameter("password");
-	        String metodoLink = request.getParameter("comeTrovato");
-	        /*
-	        response.getWriter().append("Dati registrati sono i seguenti \n"
-	        		+ "Nome: "+ nome
-	        		+ "Cognome: "+cognome + "\n"
-	    	        + "Sesso: "+ sesso + "\n"
-	    	        + "Luogo di nascita: "+ luogoNascita + "\n"
-	    	        + "Provincia: "+ provincia + "\n"
-	    	        + "Data di nscita: "+dataNascita + "\n"
-	    	        + "Codice fiscale: "+ codiceFiscale+ "\n"
-	    	        + "metodoLink: " +metodoLink);
-	        */
+	        String social = request.getParameter("trovato");
+	      
 	        DbHandler dbHandler = DbHandler.getInstance();
 	        try {
 	        	Connection connection2 = dbHandler.getConnection();
@@ -96,7 +86,7 @@ public class Registra extends HttpServlet {
 		                            + "dataNascita,"
 		                            + "password,"
 		                            + "provincia,"
-		                            + "metodoLink) "
+		                            + "social) "
 		                            + "VALUES (?,?,?,?,?,?,?,?,?)");
 				            		
 	
@@ -111,7 +101,7 @@ public class Registra extends HttpServlet {
 				           preparedStatement.setDate(6, java.sql.Date.valueOf(localDate));
 				           preparedStatement.setString(7, password);
 				           preparedStatement.setString(8, provincia);
-				           preparedStatement.setString(9, metodoLink);
+				           preparedStatement.setString(9, social);
 				           
 				           preparedStatement.executeUpdate();
 				           
